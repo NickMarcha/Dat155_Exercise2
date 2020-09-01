@@ -66,6 +66,8 @@ var modelViewMatrixLoc;
 
 var vBuffer, cBuffer;
 
+var highlightLoc;
+
 //----------------------------------------------------------------------------
 
 function quad(  a,  b,  c,  d ) {
@@ -135,6 +137,13 @@ window.onload = function init() {
     var colorLoc = gl.getAttribLocation( program, "aColor" );
     gl.vertexAttribPointer( colorLoc, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( colorLoc );
+
+    highlightLoc = gl.getUniformLocation(program, "highLight");
+
+    console.log(highlightLoc);
+
+    gl.uniform1i(highlightLoc,0);
+
 
     /*
     document.getElementById("slider1").onchange = function(event) {
@@ -245,17 +254,21 @@ var render = function() {
     modelViewMatrix = rotate(theta[0], vec3(0, 1, 0 ));
     modelViewMatrix = mult(modelViewMatrix, translate(BasePosX,0,BasePosZ));
 
+    doHighlightPart(0);
     drawCube(BASE_WIDTH, BASE_HEIGHT, BASE_WIDTH);//BASE
 
     modelViewMatrix = mult(modelViewMatrix, translate(0.0, BASE_HEIGHT, 0.0));
     modelViewMatrix = mult(modelViewMatrix, rotate(theta[LowerArm], vec3(0, 0, 1 )));
 
+    doHighlightPart(1);
     drawCube(LOWER_ARM_WIDTH, LOWER_ARM_HEIGHT, LOWER_ARM_WIDTH);//LOWER ARM
 
     modelViewMatrix  = mult(modelViewMatrix, translate(0.0, LOWER_ARM_HEIGHT, 0.0));
     modelViewMatrix  = mult(modelViewMatrix, rotate(theta[UpperArm], vec3(0, 0, 1)) );
 
+    doHighlightPart(2);
     drawCube(UPPER_ARM_WIDTH, UPPER_ARM_HEIGHT, UPPER_ARM_WIDTH);//UPPER ARM
+
 
     modelViewMatrix  = mult(modelViewMatrix, translate(0.0, UPPER_ARM_HEIGHT, 0.0));
     modelViewMatrix  = mult(modelViewMatrix, rotate(90, vec3(0, 1, 0)) ); // horizontal? claw
@@ -263,21 +276,35 @@ var render = function() {
 
     MVMStack.push(modelViewMatrix); //Save MVM,Draw left
     modelViewMatrix  = mult(modelViewMatrix, rotate(theta[left_finger1], vec3(0, 0, 1)) );
+
+    doHighlightPart(3);
     drawCube(UPPER_ARM_WIDTH/2, UPPER_ARM_HEIGHT/4, UPPER_ARM_WIDTH/2);//LEFT FINGER 1
 
     modelViewMatrix  = mult(modelViewMatrix, translate(0.0, UPPER_ARM_HEIGHT/4, 0.0));
     modelViewMatrix  = mult(modelViewMatrix, rotate(theta[left_finger2], vec3(0, 0, 1)) );
 
+    doHighlightPart(4);
     drawCube(UPPER_ARM_WIDTH/2, UPPER_ARM_HEIGHT/4, UPPER_ARM_WIDTH/2);//LEFT FINGER 2
 
     modelViewMatrix = MVMStack.pop(); //Retrieve MVM, Draw Right
     modelViewMatrix  = mult(modelViewMatrix, rotate(theta[right_finger1], vec3(0, 0, 1)) );
+    doHighlightPart(5);
     drawCube(UPPER_ARM_WIDTH/2, UPPER_ARM_HEIGHT/4, UPPER_ARM_WIDTH/2); //RIGHT FINGER 1
+
 
     modelViewMatrix  = mult(modelViewMatrix, translate(0.0, UPPER_ARM_HEIGHT/4, 0.0));
     modelViewMatrix  = mult(modelViewMatrix, rotate(theta[right_finger2], vec3(0, 0, 1)) );
 
+    doHighlightPart(6);
     drawCube(UPPER_ARM_WIDTH/2, UPPER_ARM_HEIGHT/4, UPPER_ARM_WIDTH/2); //RIGHT FINGER 2
 
     requestAnimationFrame(render);
+}
+
+function doHighlightPart(partNR){
+    if (partNR == selectedPart){
+        gl.uniform1i(highlightLoc,1);
+    } else {
+        gl.uniform1i(highlightLoc,0);
+    }
 }

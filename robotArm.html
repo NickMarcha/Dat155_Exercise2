@@ -2,34 +2,40 @@
 <html>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
-#version 300 es
+    #version 300 es
 
-in vec4 aPosition;
-in vec4 aColor;
-out vec4 vColor;
+    in vec4 aPosition;
+    in vec4 aColor;
+    out vec4 vColor;
 
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionMatrix;
 
-void main()
-{
-    vColor = aColor;
-    gl_Position = projectionMatrix * modelViewMatrix * aPosition;
-}
+    uniform int highLight;
+
+    void main()
+    {
+        if(highLight == 1){
+            vColor = vec4(1.0,1.0,1.0,1.0);
+        } else {
+            vColor = aColor;
+        }
+        gl_Position = projectionMatrix * modelViewMatrix * aPosition;
+    }
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
-#version 300 es
+    #version 300 es
 
-precision mediump float;
+    precision mediump float;
 
-in vec4 vColor;
-out vec4 fColor;
+    in vec4 vColor;
+    out vec4 fColor;
 
-void main()
-{
-    fColor = vColor;
-}
+    void main()
+    {
+        fColor = vColor;
+    }
 </script>
 
 <script type="text/javascript" src="Common/initShaders.js"></script>
@@ -60,7 +66,7 @@ upper arm angle -180 <input id="slider3" type="range"
 -->
 <body>
 <canvas id="gl-canvas" width="1024" height="1024">
-Oops ... your browser doesn't support the HTML5 canvas element
+    Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
 </body>
 </html>
