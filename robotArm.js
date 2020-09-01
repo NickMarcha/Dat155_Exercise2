@@ -118,11 +118,6 @@ window.onload = function init() {
 
     colorCube();
 
-    // Load shaders and use the resulting shader program
-
-    program = initShaders( gl, "vertex-shader", "fragment-shader" );
-    gl.useProgram( program );
-
     // Create and initialize  buffer objects
 
     vBuffer = gl.createBuffer();
