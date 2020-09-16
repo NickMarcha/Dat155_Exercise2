@@ -1,6 +1,6 @@
 "use strict";
 
-var canvas, gl, program;
+var canvas, gl, program, sphereProgram;
 
 var NumVertices = 36; //(6 faces)(2 triangles/face)(3 vertices/triangle)
 
@@ -48,16 +48,22 @@ var modelViewMatrix, projectionMatrix;
 
 var Base = 0;
 var LowerArm = 1;
-var UpperArm = 2;
+var UpperArm = 2
+
+var lower_fingers = 3;
+var upper_fingers = 4;
+/*
 var left_finger1 = 3;
 var left_finger2 = 4;
 var right_finger1 = 5;
 var right_finger2 = 6;
 
 var theta= [ +70, 20, 120, -50, 60, 50 ,-60];
+*/
+var theta= [ +70, 20, 120, -50, 60];
 
 var selectedPart = 0;
-var numOfParts = 7;
+var numOfParts = 5;
 var BasePosX = 0, BasePosZ = 0;
 
 var angle = 0;
@@ -140,7 +146,6 @@ window.onload = function init() {
 
     highlightLoc = gl.getUniformLocation(program, "highLight");
 
-    console.log(highlightLoc);
 
     gl.uniform1i(highlightLoc,0);
 
@@ -197,6 +202,14 @@ window.onload = function init() {
     projectionMatrix = ortho(-10, 10, -10, 10, -10, 10);
 
     gl.uniformMatrix4fv( gl.getUniformLocation(program, "projectionMatrix"),  false, flatten(projectionMatrix) );
+
+
+
+    //sphere Test:
+    //sphereProgram = initShaders( gl, "vertex-shader", "fragment-shader" );
+
+    //gl.useProgram( sphereProgram );
+
 
     render();
 }
@@ -275,27 +288,27 @@ var render = function() {
 
 
     MVMStack.push(modelViewMatrix); //Save MVM,Draw left
-    modelViewMatrix  = mult(modelViewMatrix, rotate(theta[left_finger1], vec3(0, 0, 1)) );
+    modelViewMatrix  = mult(modelViewMatrix, rotate(theta[lower_fingers], vec3(0, 0, 1)) );
 
     doHighlightPart(3);
     drawCube(UPPER_ARM_WIDTH/2, UPPER_ARM_HEIGHT/4, UPPER_ARM_WIDTH/2);//LEFT FINGER 1
 
     modelViewMatrix  = mult(modelViewMatrix, translate(0.0, UPPER_ARM_HEIGHT/4, 0.0));
-    modelViewMatrix  = mult(modelViewMatrix, rotate(theta[left_finger2], vec3(0, 0, 1)) );
+    modelViewMatrix  = mult(modelViewMatrix, rotate(theta[upper_fingers], vec3(0, 0, 1)) );
 
     doHighlightPart(4);
     drawCube(UPPER_ARM_WIDTH/2, UPPER_ARM_HEIGHT/4, UPPER_ARM_WIDTH/2);//LEFT FINGER 2
 
     modelViewMatrix = MVMStack.pop(); //Retrieve MVM, Draw Right
-    modelViewMatrix  = mult(modelViewMatrix, rotate(theta[right_finger1], vec3(0, 0, 1)) );
-    doHighlightPart(5);
+    modelViewMatrix  = mult(modelViewMatrix, rotate(-theta[lower_fingers], vec3(0, 0, 1)) );
+    doHighlightPart(3);
     drawCube(UPPER_ARM_WIDTH/2, UPPER_ARM_HEIGHT/4, UPPER_ARM_WIDTH/2); //RIGHT FINGER 1
 
 
     modelViewMatrix  = mult(modelViewMatrix, translate(0.0, UPPER_ARM_HEIGHT/4, 0.0));
-    modelViewMatrix  = mult(modelViewMatrix, rotate(theta[right_finger2], vec3(0, 0, 1)) );
+    modelViewMatrix  = mult(modelViewMatrix, rotate(-theta[upper_fingers], vec3(0, 0, 1)) );
 
-    doHighlightPart(6);
+    doHighlightPart(4);
     drawCube(UPPER_ARM_WIDTH/2, UPPER_ARM_HEIGHT/4, UPPER_ARM_WIDTH/2); //RIGHT FINGER 2
 
     requestAnimationFrame(render);
